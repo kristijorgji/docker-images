@@ -60,7 +60,7 @@ COPY config/fpm-pool.conf /etc/php8/php-fpm.d/www.conf
 COPY config/php.ini /etc/php8/conf.d/custom.ini
 
 # Configure supervisord
-COPY config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY config/supervisord.conf /etc/supervisord.conf
 
 # Setup document root
 RUN mkdir -p /var/www/html/app
@@ -78,7 +78,7 @@ USER www-data
 EXPOSE 8080
 
 # Let supervisord start nginx & php-fpm
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisord.conf"]
 
 # Configure a healthcheck to validate that everything is up&running
 #HEALTHCHECK --timeout=10s CMD curl --silent --fail http://127.0.0.1:8080/fpm-ping
