@@ -37,6 +37,8 @@ RUN apk --no-cache add php8=${PHP_VERSION} \
     php8-xmlwriter \
     php8-tokenizer \
     php8-pdo_mysql \
+    php8-bcmath \
+    php8-gmp \
     nginx supervisor curl tzdata htop mysql-client dcron
 
 RUN mkdir -p /etc/nginx/sites-available && mkdir -p /etc/nginx/sites-enabled && ln -s /etc/nginx/sites-available/site /etc/nginx/sites-enabled/
