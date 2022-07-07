@@ -11,29 +11,35 @@ if [ -z "$TAG" ]; then
   exit 1;
 fi
 
-dhuname=kristijorgji
+docker_target_platform=${DOCKER_TARGET_PLATFORM:-linux/amd64}
+dhuname=${DBUNAME:-kristijorgji}
 pname=$1
-cd $1
+
+cd "$1"
 
 set -e
 
 docker logout
 docker login docker.io
 
-rim="${dhuname}/${pname}:${TAG}"
+im="${dhuname}/${pname}"
+rim="${im}:${TAG}"
 
-echo -e "docker build . -t ${dhuname}/${pname}"
-docker build . -t "${dhuname}/${pname}"
+echo -e "will build docker image $im for target platform ${docker_target_platform}"
+docker buildx build . \
+  --platform "${docker_target_platform}" --output type=docker \
+  -t "$im"
 
-echo -e "docker tag ${dhuname}/${pname}:latest $rim"
-docker tag "${dhuname}/${pname}:latest" "$rim"
+echo -e "docker tag $im:latest $rim"
+docker tag "$im:latest" "$rim"
 
 echo -e "docker push $rim"
 docker push "$rim"
 
 read -p "Do you want to delete local image now (y/n)? " -n 1 -r
-if [[ $REPLY =~ ^[Nn]$ ]]
+if [[ $REPLY =~ ^[Yy]$ ]]
 then
+    echo -e "docker rmi $rim"
     docker rmi "$rim";
 fi
 
