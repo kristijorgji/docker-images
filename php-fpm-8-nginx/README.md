@@ -1,13 +1,44 @@
 # php-fpm-8-nginx
 
-A docker images which contains:
-* php 8.3, php-fpm
-* nginx
-* supervisord for nginx and php-fpm
-* a couple of the most commonly used php extensions
+Alpine-based image with PHP-FPM, nginx, and supervisord for Laravel/Lumen-style apps.
 
-# Extending the entrypoint
+## Contents
 
-You can add your own `pre` initialisations at the absolute file located at  `/pre-entrypoint.sh`
+- **PHP 8.5** + php-fpm (`php-fpm85`)
+- **nginx** listening on container port **8080**
+- **supervisord** starting nginx + php-fpm
+- FPM listen: **`127.0.0.1:9000`** (TCP)
+- Common PHP extensions (see matrix below)
+- Composer + WP-CLI on `PATH` via `php` symlink
 
-You need to make sure to copy this file during your image build and have executable +x permissions.
+## PHP extensions
+
+| Module | Package |
+|--------|---------|
+| bcmath, ctype, curl, dom, exif, fileinfo, gd, gmp, iconv, intl, mbstring | `php85-*` |
+| mysqli, mysqlnd, pdo, pdo_mysql | `php85-*` |
+| opcache, openssl, phar, session, simplexml, soap, sockets, tokenizer | `php85-*` (opcache is built into `php85` on Alpine 3.24) |
+| xml, xmlreader, xmlwriter, zip | `php85-*` |
+| imagick | `php85-pecl-imagick` |
+| redis (+ igbinary/msgpack as deps) | `php85-pecl-redis` |
+| imap | `php85-pecl-imap` |
+
+Verify after build:
+
+```bash
+docker run --rm --entrypoint php kristijorgji/php-fpm-8-nginx:0.0.8 -v
+docker run --rm --entrypoint php kristijorgji/php-fpm-8-nginx:0.0.8 -m
+```
+
+## Extending the entrypoint
+
+You can add your own `pre` initialisations at the absolute path `/pre-entrypoint.sh`.
+
+Copy that file during your image build and ensure it has executable `+x` permissions.
+
+## Tags
+
+| Tag | PHP | Alpine |
+|-----|-----|--------|
+| `0.0.8` | 8.5 | 3.24 |
+| `0.0.7` | 8.2 | 3.18 |
