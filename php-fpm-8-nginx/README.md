@@ -17,7 +17,7 @@ Alpine-based image with PHP-FPM, nginx, and supervisord for Laravel/Lumen-style 
 |--------|---------|
 | bcmath, ctype, curl, dom, exif, fileinfo, gd, gmp, iconv, intl, mbstring | `php85-*` |
 | mysqli, mysqlnd, pdo, pdo_mysql | `php85-*` |
-| opcache, openssl, phar, session, simplexml, soap, sockets, tokenizer | `php85-*` (opcache is built into `php85` on Alpine 3.24) |
+| opcache, openssl, phar, session, simplexml, soap, sockets, sodium, tokenizer | `php85-*` (opcache is built into `php85` on Alpine 3.24) |
 | xml, xmlreader, xmlwriter, zip | `php85-*` |
 | imagick | `php85-pecl-imagick` |
 | redis (+ igbinary/msgpack as deps) | `php85-pecl-redis` |

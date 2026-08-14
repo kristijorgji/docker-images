@@ -36,6 +36,7 @@ RUN apk --no-cache add php85 \
     php85-simplexml \
     php85-soap \
     php85-sockets \
+    php85-sodium \
     php85-tokenizer \
     php85-xml \
     php85-xmlreader \
