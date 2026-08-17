@@ -13,15 +13,25 @@ Public Docker images used by kristijorgji projects (PHP-FPM/nginx runtimes, buil
 
 ## Images catalog
 
-| Folder | Docker Hub image | Runtime | Purpose |
-|--------|------------------|---------|---------|
-| [php-fpm-8-nginx](php-fpm-8-nginx/) | `kristijorgji/php-fpm-8-nginx` | PHP 8.5 / Alpine 3.24 (`0.0.8`) | PHP-FPM + nginx + supervisord for API/payments apps |
-| [web-builder](web-builder/) | `kristijorgji/web-builder` | Node-oriented builder | Frontend/static build helper |
-| [wordpress-php-7.1](wordpress-php-7.1/) | `kristijorgji/wordpress-php-7.1` | PHP 7.1 (legacy) | Legacy WordPress stack |
+| Folder                                  | Docker Hub image                 | Runtime                         | Purpose                                             |
+|-----------------------------------------|----------------------------------|---------------------------------|-----------------------------------------------------|
+| [php-fpm-8-nginx](php-fpm-8-nginx/)     | `kristijorgji/php-fpm-8-nginx`   | PHP 8.5 / Alpine 3.24 (`0.0.8`) | PHP-FPM + nginx + supervisord for API/payments apps |
+| [web-builder](web-builder/)             | `kristijorgji/web-builder`       | Node-oriented builder           | Frontend/static build helper                        |
+| [wordpress-php-7.1](wordpress-php-7.1/) | `kristijorgji/wordpress-php-7.1` | PHP 7.1 (legacy)                | Legacy WordPress stack                              |
 
 See [php-fpm-8-nginx/README.md](php-fpm-8-nginx/README.md) for FPM listen address (`127.0.0.1:9000`), port **8080**, extension list, and `/pre-entrypoint.sh`.
 
 ## How to build and push to Docker Hub
+
+Publish **only** via this script (multi-arch `buildx --push`). Never `docker build` + `docker push` from a Mac 
+— that overwrites the Hub tag with a single **arm64** manifest and breaks amd64 production.
+
+One-time builder setup on Apple Silicon:
+
+```shell
+docker buildx create --name multiarch --use 2>/dev/null || docker buildx use multiarch
+docker run --privileged --rm tonistiigi/binfmt --install all
+```
 
 ```shell
 project=php-fpm-8-nginx
@@ -30,13 +40,26 @@ TAG=0.0.8 bash build-and-push-to-dhub.sh "$project"
 
 `project` must be the name of one of the folders in this repository.
 
+After push, confirm a **manifest list** with both platforms:
+
+```shell
+docker buildx imagetools inspect kristijorgji/php-fpm-8-nginx:0.0.8
+# expect linux/amd64 and linux/arm64
+
+docker pull --platform linux/amd64 kristijorgji/php-fpm-8-nginx:0.0.8
+cid=$(docker create --platform linux/amd64 --entrypoint /bin/true kristijorgji/php-fpm-8-nginx:0.0.8)
+docker cp "$cid:/bin/busybox" /tmp/bb-amd64 && docker rm -f "$cid"
+file /tmp/bb-amd64
+# expect x86-64, not aarch64
+```
+
 ## Environment variables
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `TAG` | yes | Tag to push (e.g. `0.0.8`) |
-| `DOCKER_TARGET_PLATFORM` | no | Defaults to `linux/amd64` |
-| `DBUNAME` | no | Docker Hub username; defaults to `kristijorgji` |
+| Variable                 | Required | Description                                             |
+|--------------------------|----------|---------------------------------------------------------|
+| `TAG`                    | yes      | Tag to push (e.g. `0.0.8`)                              |
+| `DOCKER_TARGET_PLATFORM` | no       | Defaults to `linux/amd64,linux/arm64` (comma-separated) |
+| `DBUNAME`                | no       | Docker Hub username; defaults to `kristijorgji`         |
 
 ## Extension / PHP bump policy
 
@@ -45,15 +68,17 @@ When bumping the PHP minor/major in `php-fpm-8-nginx`:
 1. Keep the **full extension matrix** from the previous tag (bcmath, curl, gd, imagick, redis, pdo_mysql, soap, sockets, …).
 2. Prefer Alpine community `phpXX` / `phpXX-pecl-*` packages over ad-hoc `pecl install`.
 3. After build, confirm with `php -m` that every required module loads.
-4. Update consumer `FROM` lines (`single_local`, `single_devops`) to the new tag only after the Hub push succeeds.
+4. Publish the new tag with the multi-arch script **before** updating consumers.
 
 ## Local smoke test (php-fpm-8-nginx)
 
+Local `docker build` is for smoke only on your machine. **Do not push** that image to Hub.
+
 ```bash
-docker build -t kristijorgji/php-fpm-8-nginx:0.0.8 ./php-fpm-8-nginx
-docker run --rm --entrypoint php kristijorgji/php-fpm-8-nginx:0.0.8 -v
-docker run --rm --entrypoint php kristijorgji/php-fpm-8-nginx:0.0.8 -m
-docker run --rm --entrypoint php-fpm85 kristijorgji/php-fpm-8-nginx:0.0.8 -t
+docker build -t kristijorgji/php-fpm-8-nginx:0.0.8-local ./php-fpm-8-nginx
+docker run --rm --entrypoint php kristijorgji/php-fpm-8-nginx:0.0.8-local -v
+docker run --rm --entrypoint php kristijorgji/php-fpm-8-nginx:0.0.8-local -m
+docker run --rm --entrypoint php-fpm85 kristijorgji/php-fpm-8-nginx:0.0.8-local -t
 ```
 
 ## Changelog highlights
@@ -64,3 +89,4 @@ docker run --rm --entrypoint php-fpm85 kristijorgji/php-fpm-8-nginx:0.0.8 -t
 - PHP **8.2 → 8.5** (`php85` packages, `/etc/php85`, `php-fpm85`)
 - Extension parity with `0.0.7` plus **`php85-pecl-imap`**
 - Explicit `php85-sockets` and `php85-mysqlnd`
+- Must be published as **multi-arch** (`linux/amd64` + `linux/arm64`)
