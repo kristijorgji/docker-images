@@ -10,41 +10,42 @@ RUN apk update && apk upgrade;
 
 # Install packages and remove default server definition
 # Extension parity with 0.0.7 (php82) plus php85-pecl-imap for composer ext-imap.
-# Core php85 packages are pinned to 8.5.12-r0 (CVE-2026-109618, CVE-2026-109619).
+# Core php85 packages are pinned (CVE-2026-109618, CVE-2026-109619).
 # PECL packages stay unpinned; the Alpine 3.24 index builds them against this PHP.
+ARG PHP85_VERSION=8.5.12-r0
 RUN apk --no-cache add \
-    php85=8.5.12-r0 \
-    php85-bcmath=8.5.12-r0 \
-    php85-ctype=8.5.12-r0 \
-    php85-curl=8.5.12-r0 \
-    php85-dom=8.5.12-r0 \
-    php85-exif=8.5.12-r0 \
-    php85-fileinfo=8.5.12-r0 \
-    php85-fpm=8.5.12-r0 \
-    php85-gd=8.5.12-r0 \
-    php85-gmp=8.5.12-r0 \
-    php85-iconv=8.5.12-r0 \
-    php85-intl=8.5.12-r0 \
-    php85-mbstring=8.5.12-r0 \
-    php85-mysqli=8.5.12-r0 \
-    php85-mysqlnd=8.5.12-r0 \
-    php85-openssl=8.5.12-r0 \
-    php85-pdo=8.5.12-r0 \
-    php85-pdo_mysql=8.5.12-r0 \
+    php85=${PHP85_VERSION} \
+    php85-bcmath=${PHP85_VERSION} \
+    php85-ctype=${PHP85_VERSION} \
+    php85-curl=${PHP85_VERSION} \
+    php85-dom=${PHP85_VERSION} \
+    php85-exif=${PHP85_VERSION} \
+    php85-fileinfo=${PHP85_VERSION} \
+    php85-fpm=${PHP85_VERSION} \
+    php85-gd=${PHP85_VERSION} \
+    php85-gmp=${PHP85_VERSION} \
+    php85-iconv=${PHP85_VERSION} \
+    php85-intl=${PHP85_VERSION} \
+    php85-mbstring=${PHP85_VERSION} \
+    php85-mysqli=${PHP85_VERSION} \
+    php85-mysqlnd=${PHP85_VERSION} \
+    php85-openssl=${PHP85_VERSION} \
+    php85-pdo=${PHP85_VERSION} \
+    php85-pdo_mysql=${PHP85_VERSION} \
     php85-pecl-imagick \
     php85-pecl-imap \
     php85-pecl-redis \
-    php85-phar=8.5.12-r0 \
-    php85-session=8.5.12-r0 \
-    php85-simplexml=8.5.12-r0 \
-    php85-soap=8.5.12-r0 \
-    php85-sockets=8.5.12-r0 \
-    php85-sodium=8.5.12-r0 \
-    php85-tokenizer=8.5.12-r0 \
-    php85-xml=8.5.12-r0 \
-    php85-xmlreader=8.5.12-r0 \
-    php85-xmlwriter=8.5.12-r0 \
-    php85-zip=8.5.12-r0 \
+    php85-phar=${PHP85_VERSION} \
+    php85-session=${PHP85_VERSION} \
+    php85-simplexml=${PHP85_VERSION} \
+    php85-soap=${PHP85_VERSION} \
+    php85-sockets=${PHP85_VERSION} \
+    php85-sodium=${PHP85_VERSION} \
+    php85-tokenizer=${PHP85_VERSION} \
+    php85-xml=${PHP85_VERSION} \
+    php85-xmlreader=${PHP85_VERSION} \
+    php85-xmlwriter=${PHP85_VERSION} \
+    php85-zip=${PHP85_VERSION} \
     nginx supervisor curl tzdata htop mysql-client dcron
 
 RUN mkdir -p /etc/nginx/sites-available && mkdir -p /etc/nginx/sites-enabled && ln -s /etc/nginx/sites-available/site /etc/nginx/sites-enabled/
