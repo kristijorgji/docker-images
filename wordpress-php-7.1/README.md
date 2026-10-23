@@ -7,7 +7,7 @@ Example with docker-compose mounting the volume
 version: "3.7"
 services:
   wordpress:
-    image: kristijorgji/wordpress-php-7.1:0.0.0
+    image: kristijorgji/wordpress-php-7.1:0.0.1
     volumes:
       - ./kristijorgji.com:/var/www/html/app
     ports:

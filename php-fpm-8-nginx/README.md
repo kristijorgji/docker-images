@@ -4,7 +4,7 @@ Alpine-based image with PHP-FPM, nginx, and supervisord for Laravel/Lumen-style 
 
 ## Contents
 
-- **PHP 8.5** + php-fpm (`php-fpm85`)
+- **PHP 8.5.12** + php-fpm (`php-fpm85`), pinned for CVE-2026-109618 and CVE-2026-109619
 - **nginx** listening on container port **8080**
 - **supervisord** starting nginx + php-fpm
 - FPM listen: **`127.0.0.1:9000`** (TCP)
@@ -26,8 +26,8 @@ Alpine-based image with PHP-FPM, nginx, and supervisord for Laravel/Lumen-style 
 Verify after build:
 
 ```bash
-docker run --rm --entrypoint php kristijorgji/php-fpm-8-nginx:0.0.8 -v
-docker run --rm --entrypoint php kristijorgji/php-fpm-8-nginx:0.0.8 -m
+docker run --rm --entrypoint php kristijorgji/php-fpm-8-nginx:0.0.9 -v
+docker run --rm --entrypoint php kristijorgji/php-fpm-8-nginx:0.0.9 -m
 ```
 
 ## Extending the entrypoint
@@ -40,5 +40,6 @@ Copy that file during your image build and ensure it has executable `+x` permiss
 
 | Tag | PHP | Alpine |
 |-----|-----|--------|
-| `0.0.8` | 8.5 | 3.24 |
+| `0.0.9` | 8.5.12 | 3.24 |
+| `0.0.8` | 8.5.9 | 3.24 |
 | `0.0.7` | 8.2 | 3.18 |
