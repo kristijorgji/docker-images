@@ -1,15 +1,8 @@
-FROM kristijorgji/php-fpm-8-nginx:0.02 as base
+FROM kristijorgji/php-fpm-8-nginx:0.0.9 AS base
 
 USER root
 
-# utils
-RUN apk add git
-
-# node 8.x,yarn,gulp
-ENV ALPINE_MIRROR "https://dl-cdn.alpinelinux.org/alpine"
-
-RUN echo "${ALPINE_MIRROR}/v3.8/main/" >> /etc/apk/repositories
-
-RUN apk add --update nodejs=8.14.0-r0 --repository="${ALPINE_MIRROR}/v3.8/main/"
-RUN apk add npm yarn \
-    && npm install gulp -g
+# Node comes from Alpine 3.24. Node 8.14 only existed in the Alpine 3.8 repo and
+# cannot be installed on the PHP 8.5.12 base image.
+RUN apk add --no-cache git nodejs npm yarn \
+    && npm install -g gulp

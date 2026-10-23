@@ -9,39 +9,42 @@ RUN set -x ; \
 RUN apk update && apk upgrade;
 
 # Install packages and remove default server definition
-# Extension parity with 0.0.7 (php82) plus php85-pecl-imap for composer ext-imap
-RUN apk --no-cache add php85 \
-    php85-bcmath \
-    php85-ctype \
-    php85-curl \
-    php85-dom \
-    php85-exif \
-    php85-fileinfo \
-    php85-fpm \
-    php85-gd \
-    php85-gmp \
-    php85-iconv \
-    php85-intl \
-    php85-mbstring \
-    php85-mysqli \
-    php85-mysqlnd \
-    php85-openssl \
-    php85-pdo \
-    php85-pdo_mysql \
+# Extension parity with 0.0.7 (php82) plus php85-pecl-imap for composer ext-imap.
+# Core php85 packages are pinned to 8.5.12-r0 (CVE-2026-109618, CVE-2026-109619).
+# PECL packages stay unpinned; the Alpine 3.24 index builds them against this PHP.
+RUN apk --no-cache add \
+    php85=8.5.12-r0 \
+    php85-bcmath=8.5.12-r0 \
+    php85-ctype=8.5.12-r0 \
+    php85-curl=8.5.12-r0 \
+    php85-dom=8.5.12-r0 \
+    php85-exif=8.5.12-r0 \
+    php85-fileinfo=8.5.12-r0 \
+    php85-fpm=8.5.12-r0 \
+    php85-gd=8.5.12-r0 \
+    php85-gmp=8.5.12-r0 \
+    php85-iconv=8.5.12-r0 \
+    php85-intl=8.5.12-r0 \
+    php85-mbstring=8.5.12-r0 \
+    php85-mysqli=8.5.12-r0 \
+    php85-mysqlnd=8.5.12-r0 \
+    php85-openssl=8.5.12-r0 \
+    php85-pdo=8.5.12-r0 \
+    php85-pdo_mysql=8.5.12-r0 \
     php85-pecl-imagick \
     php85-pecl-imap \
     php85-pecl-redis \
-    php85-phar \
-    php85-session \
-    php85-simplexml \
-    php85-soap \
-    php85-sockets \
-    php85-sodium \
-    php85-tokenizer \
-    php85-xml \
-    php85-xmlreader \
-    php85-xmlwriter \
-    php85-zip \
+    php85-phar=8.5.12-r0 \
+    php85-session=8.5.12-r0 \
+    php85-simplexml=8.5.12-r0 \
+    php85-soap=8.5.12-r0 \
+    php85-sockets=8.5.12-r0 \
+    php85-sodium=8.5.12-r0 \
+    php85-tokenizer=8.5.12-r0 \
+    php85-xml=8.5.12-r0 \
+    php85-xmlreader=8.5.12-r0 \
+    php85-xmlwriter=8.5.12-r0 \
+    php85-zip=8.5.12-r0 \
     nginx supervisor curl tzdata htop mysql-client dcron
 
 RUN mkdir -p /etc/nginx/sites-available && mkdir -p /etc/nginx/sites-enabled && ln -s /etc/nginx/sites-available/site /etc/nginx/sites-enabled/
